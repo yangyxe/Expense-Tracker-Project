@@ -1,0 +1,162 @@
+#create a list of expenses with dictionaries that will be inputted
+expenses = []
+
+#create a set of categories
+category_set = {expense['category'] for expense in expenses}
+
+#import datetime module
+from datetime import datetime
+
+
+#function to verify whether inputted date is valid
+def is_valid_date(date_str, date_format="%Y-%m-%d"):
+    try:
+        parsed_date = datetime.strptime(date_str, date_format) 
+    except ValueError:
+        return False #if date is not formatted properly, return as false
+    
+    #compare the parsed date with the current date and time
+    if parsed_date > datetime.now():
+        return False #if parsed date is in the future, return as false
+    
+    return True
+
+
+#function to add a new expense
+def adding_expense():
+    #collect the data of new expense from user
+    print("Please input the following data of your new expense:")
+
+    global category #globalizing variable to use in other functions
+    category = input("Category: ").lower()
+    
+    try:
+        amount = float(input("Amount: "))
+    except ValueError: #ensures that user inputted a number
+        print("The amount entered is not valid. Please input again later!")
+        return
+
+    if amount <= 0: #prevent user from inputting negative amounts
+        print("The amount entered is not valid. Please input again later!")    
+        return
+
+    date = input("Date (yyyy-mm-dd): ")
+    
+    #verify if the date is valid
+    if not is_valid_date(date):
+        print("The date entered is not valid. Please input again later!")
+        return  
+    
+    #verify if the category exists
+    if category not in category_set:
+        print("The category", category, "currently does not exist.")
+        userinput = input("Do you want to create this new category? ((Y)es/(N)o)" ) #asks user if they would like to create a new category
+        if userinput.upper() == 'N':
+            print("The new expense has not been added. Please input again later!")
+            return
+    
+    #create the new expense dictionary
+    expense = { "category": category, "amount": amount, "date": date }
+    
+    #add the new expense to the list of expenses
+    expenses.append(expense)
+    print("Expense added!")
+
+
+#function to calculate total expenses
+def calculate_total(expenses):
+    viewing_expenses() #display all expenses
+    total = sum(expense['amount'] for expense in expenses) #calculate sum of all expenses
+    print(f"\nTotal Expenses: ${total:.2f}")
+    
+
+#function to summarize expenses
+def summarize_expenses():
+    total_expenses = sum(expense['amount'] for expense in expenses)  #calculate total expenses
+    total_count = len(expenses)  #calculate number of expenses
+    
+    #print the summary
+    print(f"Total Amount: ${total_expenses:.2f}")
+    print(f"Total Number of Expenses: {total_count}")
+
+
+#function to view expenses
+def viewing_expenses():
+    if not expenses: #if expenses list is empty
+        print("There are no expenses to view!")
+        return
+
+    sorted_expenses = sorted(expenses, key=lambda x: x['category']) #sort list by category
+
+    previous_category = None #variable to ensure that categories aren't printed more than once
+
+    for expense in sorted_expenses:
+        if expense['category'] != previous_category: #category is printed only if it is different from previous category
+            print(f"{expense['category'].capitalize()}:")  
+            previous_category = expense['category']
+
+        #print expense details
+        print(f"  Amount: ${expense['amount']:<10.2f}") 
+        print(f"  Date: {expense['date']:<15}")
+        print()
+
+
+#function to delete expenses
+def deleting_expenses():
+    if not expenses: #if expenses list is empty
+        print("There are no expenses to delete!")
+        return
+    
+    sorted_expenses_list = sorted(expenses, key=lambda x: x['category']) #sort list by category for display
+
+    for idx, expense in enumerate(sorted_expenses_list, start=1): #display list of expenses with index for easier expense removal
+        print(f"{idx}. Category: {expense['category']} \n   Amount: ${expense['amount']} \n   Date: {expense['date']}")
+        print()
+
+    try:
+        expense_index = int(input("Enter the number of the expense you wish to delete: ")) - 1 #asks user which expense they would like to delete
+        if expense_index < 0 or expense_index >= len(sorted_expenses_list): #check if inputted index is valid
+            print("Please select a valid expense!")
+            return
+    except ValueError: #if index isn't valid
+        print("Please enter a valid number!")
+        return
+
+    expense_to_delete = sorted_expenses_list[expense_index] #delete expense based on inputted index
+    expenses.remove(expense_to_delete) #remove expense from expenses list
+    print(f"Expense deleted!")
+    
+    
+    
+#main program
+def main():
+    print("Welcome to this super cool expense tracker!")
+
+    while True:
+        #display menu options
+        menu = input("\n \n1. Add Expense \n2. Calculate Total Expenses \n3. Summarize Expenses \n4. View Expenses \n5. Delete Expenses \n6. Exit \n \nEnter the number of your choice: ")
+        
+        if menu == "1":
+            print()
+            adding_expense()
+        elif menu == "2":
+            print()
+            calculate_total(expenses)
+        elif menu == "3":
+            print()
+            summarize_expenses()
+        elif menu == "4":
+            print()
+            viewing_expenses()
+        elif menu == "5":
+            print()
+            deleting_expenses()
+        elif menu == "6":
+            print("Exiting program!")
+            break
+        else: #if user inputs invalid choice
+            print("That is not a valid choice! \n")
+            continue
+
+if __name__ == "__main__": #calling main function
+    main()
