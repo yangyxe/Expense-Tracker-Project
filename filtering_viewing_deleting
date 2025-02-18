@@ -1,0 +1,41 @@
+expense = "name" + "date"
+expenses = {}
+categories = {}
+
+def filtering_expenses():
+    new_category = input("Enter a category for your expense: ")
+    if new_category not in categories.items():
+        categories[new_category] = []
+        categories[new_category].append(expense)
+    else:
+        categories[new_category].append(expense)
+    
+def viewing_expenses():
+    for new_category in categories.items():
+        for key in new_category:
+            print(key)
+            for expense in new_category:
+                print(expense)
+
+def deleting_expenses():
+    while True:
+        print()
+        for key, value in expenses.items():
+                print(f"{key}: {value}")
+
+        while True:
+            delete_expense_choice = input("\nWhich expense would you like to delete? Enter its name: ")
+
+            if delete_expense_choice in expenses:
+                break
+            else:
+                print("That is not a valid choice. Please try again!")
+                continue
+        expenses.pop(delete_expense_choice)
+        break
+    
+    print()
+    for key, value in expenses.items():
+        print(f"{key}: {value}")
+
+deleting_expenses()

@@ -1,0 +1,16 @@
+def calculate_total(expenses):
+    total = sum(expenses['amount'] for expenses in expenses.values())
+    print(f"\nTotal Expenses: ${total:.2f}")
+    
+def summarize_expenses():
+    """Summarize total expenses."""
+    total_expenses = sum(expense['amount'] for expense in expenses.values())  # Calculate total expenses
+    total_count = len(expenses)  # Calculate number of expenses
+    
+    # Print the summary
+    print(f"Total amount: ${total_expenses:.2f}")
+    print(f"Total expenses: {total_count}")
+
+    expenses = {}
+
+
